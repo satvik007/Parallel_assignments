@@ -1,0 +1,21 @@
+Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Enter 1 to reposition hare: Enter 1 to reposition turtle: Turtle wins
+Hare -      0   Turtle -      1
+Hare -      0   Turtle -      2
+Hare -      0   Turtle -      3
+Hare -      0   Turtle -      4
+Hare -      3   Turtle -      5
+Hare -      6   Turtle -      6
+Hare -      6   Turtle -      7
+Hare -      6   Turtle -      8
+Hare -      9   Turtle -      9
+Hare -      9   Turtle -     10
+Hare -      9   Turtle -     11
+Hare -      9   Turtle -     12
+Hare -     12   Turtle -     13
+Hare -     15   Turtle -     14
+Hare -     15   Turtle -     15
+Hare -     15   Turtle -     16
+Hare -     15   Turtle -     17
+Hare -     15   Turtle -     18
+Hare -     15   Turtle -     19
+Hare -     18   Turtle -     20
