@@ -16,8 +16,23 @@ const int INF = 1 << 30;
 
 #define maxn 100010
 
-
 int finish = 20;
+
+unsigned long mix(unsigned long a, unsigned long b, unsigned long c)
+{
+    a=a-b;  a=a-c;  a=a^(c >> 13);
+    b=b-c;  b=b-a;  b=b^(a << 8);
+    c=c-a;  c=c-b;  c=c^(b >> 13);
+    a=a-b;  a=a-c;  a=a^(c >> 12);
+    b=b-c;  b=b-a;  b=b^(a << 16);
+    c=c-a;  c=c-b;  c=c^(b >> 5);
+    a=a-b;  a=a-c;  a=a^(c >> 3);
+    b=b-c;  b=b-a;  b=b^(a << 10);
+    c=c-a;  c=c-b;  c=c^(b >> 15);
+    return c;
+}
+
+#include <unistd.h>
 
 int main() {
 #ifdef BZ
@@ -26,14 +41,14 @@ int main() {
     ios_base::sync_with_stdio(false); cin.tie(nullptr); cout.tie(nullptr); cout.setf(ios::fixed); cout.precision(6);
 
     //ifstream in ("prog.txt");
+    unsigned long seed = mix(clock(), time(NULL), getpid());
+    srand (seed);
 
     while (true) {
         ifstream in ("prog.txt");
         while (in.peek() != 'G' and in.peek() != 'E') {
             // wait;
         }
-        cout << "GodL writes\n";
-        flush (cout);
         if (in.peek() == 'E') break;
         ofstream out ("god.txt");
         int u = rand() % 2;
