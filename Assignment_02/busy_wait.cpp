@@ -4,24 +4,33 @@
 
 using namespace std;
 
-int flag, n, thread_count;
-long long sum;
+int flag, thread_count;
+long long n, sum;
+
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 void* thread_sum (void* rank) {
     long my_rank = (long) rank;
-    double factor, my_sum = 0.0;
+    long long my_sum = 0;
     long long i;
-    long long my_n = n / thread_count;
-    long long my_first_i = my_n * my_rank;
-    long long my_last_i = my_first_i + my_n;
+    long long my_n;
+    long long my_first_i;
+    long long my_last_i;
+
+    my_n = (n + thread_count - 1) / thread_count;
+    my_first_i = my_n * my_rank;
+    my_last_i = min (my_first_i + my_n, n);
+
+    pthread_mutex_lock (&lock);
+    cout << my_rank << " " << my_first_i << " " << my_last_i << "\n";
+    pthread_mutex_unlock (&lock); 
+
+    if (my_first_i > n) {
+        return NULL;
+    }
     
-    if (my_first_i % 2 == 0)
-        factor = 1.0;
-    else
-        factor = - 1.0;
-    
-    for (i = my_first_i; i < my_last_i; i++, factor = - factor)
-        my_sum += factor/(2*i+1);
+    for (i = my_first_i; i < my_last_i; i++)
+        my_sum += i;
 
     while (flag != my_rank);
     
@@ -42,11 +51,11 @@ int calculate_thread_count (string arg_val) {
     throw -1;
 }
 
-int calculate_n (string arg_val) {
+long long calculate_n (string arg_val) {
     regex intended("[0-9]+");
-    if (regex_match(arg_val, intended) and arg_val.size() <= 9) {
-        int arg_val_int = stoi (arg_val);
-        if (arg_val_int > 0 and arg_val_int <= 1e9) {
+    if (regex_match(arg_val, intended) and arg_val.size() <= 10) {
+        long long arg_val_int = stoll (arg_val);
+        if (arg_val_int > 0 and arg_val_int <= 1e10) {
             return arg_val_int;
         }
     } 
@@ -54,11 +63,16 @@ int calculate_n (string arg_val) {
 }
 
 void init () {
+    thread_count = 4;
+    n = 10;
     flag = 0;
     sum = 0;
 }
 
 int main (int argc, char **argv) {
+
+    clock_t begin = clock();
+    init();
 
     if (!(argc % 2)) {
         cerr << "Arguments error\n";
@@ -88,9 +102,23 @@ int main (int argc, char **argv) {
         }
     }
 
-    init();
+    pthread_t threads[thread_count];
+    int iret[thread_count];
 
+    for (int i = 0; i < thread_count; i++) {
+        iret[i] = pthread_create( &threads[i], NULL, thread_sum, (void*) (long) i);
+    }
 
+    for (int i = 0; i < thread_count; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    cout << sum << "\n";
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+
+    cout << "Time used : " << elapsed_secs << "\n";
 
     return 0;
 }
