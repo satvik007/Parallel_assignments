@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 CC = g++
 FLAGS = -std=c++14 -lpthread
-OBJS = busy_wait.o busy_wait_plus.o mutex.o mutex_plus.o
+OBJS = busy_wait.o busy_wait_plus.o mutex.o mutex_plus.o process_data_mutex_busy.o
 n = 1000000000
 LOOPS = 5
 
@@ -20,6 +20,9 @@ mutex.o : mutex.cpp
 mutex_plus.o : mutex_plus.cpp
 	$(CC) mutex_plus.cpp -o mutex_plus.out  $(FLAGS)
 
+process_data_mutex_busy.o : process_data_mutex_busy.cpp
+	$(CC) process_data_mutex_busy.cpp -o process_data_mutex_busy.out  $(FLAGS)
+
 run : 
 	make clean 
 	make all
@@ -27,6 +30,7 @@ run :
 	make run_busy_wait_plus
 	make run_mutex
 	make run_mutex_plus
+	make run_process_data_mutex_busy
 
 run_busy_wait:
 	for ((i=1; i <= ${LOOPS}; ++i)) do ./busy_wait.out -n $(n) -t 1 -f busy_wait.txt; done
@@ -68,5 +72,11 @@ run_mutex_plus:
 	for ((i=1; i <= ${LOOPS}; ++i)) do ./mutex_plus.out -n $(n) -t 16 -f mutex_plus.txt; done
 	for ((i=1; i <= ${LOOPS}; ++i)) do ./mutex_plus.out -n $(n) -t 32 -f mutex_plus.txt; done
 
+run_process_data_mutex_busy:
+	./process_data_mutex_busy.out -f busy_wait.txt -o busy_wait_final.txt
+	./process_data_mutex_busy.out -f busy_wait_plus.txt -o busy_wait_plus_final.txt
+	./process_data_mutex_busy.out -f mutex.txt -o mutex_final.txt
+	./process_data_mutex_busy.out -f mutex_plus.txt -o mutex_plus_final.txt
+	
 clean:
 	rm -rf *.out *.txt
