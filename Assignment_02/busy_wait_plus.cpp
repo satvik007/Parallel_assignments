@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <regex>
+#include <thread>
+#include <mutex>
 
 using namespace std;
 
@@ -8,7 +10,7 @@ int flag, thread_count;
 long long n, sum;
 string file;
 
-pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+mutex mtx;
 
 void* thread_sum (void* rank) {
     long my_rank = (long) rank;
@@ -22,9 +24,9 @@ void* thread_sum (void* rank) {
     my_first_i = my_n * my_rank;
     my_last_i = min (my_first_i + my_n, n);
 
-    // pthread_mutex_lock (&lock);
+    // mtx.lock();
     // cout << my_rank << " " << my_first_i << " " << my_last_i << "\n";
-    // pthread_mutex_unlock (&lock); 
+    // mtx.unlock();
 
     if (my_first_i > n) {
         return NULL;
@@ -76,7 +78,6 @@ void init () {
     n = 10;
     flag = 0;
     sum = 0;
-    file = "";
 }
 
 int main (int argc, char **argv) {
@@ -119,15 +120,16 @@ int main (int argc, char **argv) {
         }
     }
 
-    pthread_t threads[thread_count];
+    vector <thread> threads (thread_count);
     int iret[thread_count];
 
     for (int i = 0; i < thread_count; i++) {
-        iret[i] = pthread_create( &threads[i], NULL, thread_sum, (void*) (long) i);
+        threads[i] = thread(thread_sum, (void*) (long) i);
+        //iret[i] = pthread_create( &threads[i], NULL, thread_sum, (void*) (long) i);
     }
 
     for (int i = 0; i < thread_count; i++) {
-        pthread_join(threads[i], NULL);
+        threads[i].join();
     }
 
     //cout << sum << "\n";
@@ -138,6 +140,7 @@ int main (int argc, char **argv) {
     if (!file.empty()) {
         freopen(file.c_str(), "a+", stdout);
     }
+
     cout << "n: " << n << "    Threads: " << thread_count;
     cout << "   Time used : " << elapsed_secs << "\n";
 

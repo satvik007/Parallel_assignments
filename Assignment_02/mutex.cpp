@@ -33,10 +33,9 @@ void* thread_sum (void* rank) {
     for (i = my_first_i; i < my_last_i; i++)
         my_sum += i;
 
-    while (flag != my_rank);
-    
+    pthread_mutex_lock (&lock);
     sum += my_sum;
-    flag = (flag+1) % thread_count;
+    pthread_mutex_unlock (&lock); 
     
     return NULL;
 }
@@ -138,8 +137,8 @@ int main (int argc, char **argv) {
     if (!file.empty()) {
         freopen(file.c_str(), "a+", stdout);
     }
+
     cout << "n: " << n << "    Threads: " << thread_count;
     cout << "   Time used : " << elapsed_secs << "\n";
-
     return 0;
 }
