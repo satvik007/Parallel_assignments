@@ -91,4 +91,65 @@ ICRNL comes from <termios.h>. The I stands for “input flag”, CR stands for �
 
 Now Ctrl-M is read as a 13 (carriage return), and the Enter key is also read as a 13.
 
+It turns out that the terminal does a similar translation on the output side. It translates each newline
+ ("\n") we print into a carriage return followed by a newline ("\r\n"). The terminal requires both of these 
+ characters in order to start a new line of text. The carriage return moves the cursor back to the beginning 
+ of the current line, and the newline moves the cursor down a line, scrolling the screen if necessary.
+
+We will turn off all output processing features by turning off the OPOST flag. In practice, the "\n" to 
+"\r\n" translation is likely the only output processing feature turned on by default.
+
+OPOST comes from <termios.h>. O means it’s an output flag, and I assume POST stands for “post-processing of output”.
+
+BRKINT, INPCK, ISTRIP, and CS8 all come from <termios.h>.
+
+When BRKINT is turned on, a break condition will cause a SIGINT signal to be sent to the program, 
+    like pressing Ctrl-C.
+INPCK enables parity checking, which doesn’t seem to apply to modern terminal emulators.
+ISTRIP causes the 8th bit of each input byte to be stripped, meaning it will set it to 0. This is 
+    probably already turned off.
+CS8 is not a flag, it is a bit mask with multiple bits, which we set using the bitwise-OR (|) operator
+    unlike all the flags we are turning off. It sets the character size (CS) to 8 bits per byte. On my system,
+    it’s already set that way.
+
+Currently, read() will wait indefinitely for input from the keyboard before it returns. What if we want to do
+something like animate something on the screen while waiting for user input? We can set a timeout, so that 
+read() returns if it doesn’t get any input for a certain amount of time.
+
+VMIN and VTIME come from <termios.h>. They are indexes into the c_cc field, which stands for 
+"control characters", an array of bytes that control various terminal settings.
+
+The VMIN value sets the minimum number of bytes of input needed before read() can return. We set it to 0 
+so that read() returns as soon as there is any input to be read. The VTIME value sets the maximum amount of
+time to wait before read() returns. It is in tenths of a second, so we set it to 1/10 of a second, or 100 
+milliseconds. If read() times out, it will return 0, which makes sense because its usual return value is 
+the number of bytes read.
+
+perror() comes from <stdio.h>, and exit() comes from <stdlib.h>.
+
+Most C library functions that fail will set the global errno variable to indicate what the error was. perror()
+looks at the global errno variable and prints a descriptive error message for it. It also prints the string 
+given to it before it prints the error message, which is meant to provide context about what part of your
+code caused the error.
+
+errno and EAGAIN come from <errno.h>.
+
+tcsetattr(), tcgetattr(), and read() all return -1 on failure, and set the errno value to indicate the error.
+
+In Cygwin, when read() times out it returns -1 with an errno of EAGAIN, instead of just returning 0 like 
+it’s supposed to. To make it work in Cygwin, we won’t treat EAGAIN as an error.
+
+An easy way to make tcgetattr() fail is to give your program a text file or a pipe as the standard input instead
+of your terminal. To give it a file as standard input, run ./kilo <kilo.c. To give it a pipe, run echo test |
+./kilo. Both should result in the same error from tcgetattr(), something like Inappropriate ioctl for device.
+
+The CTRL_KEY macro bitwise-ANDs a character with the value 00011111, in binary. (In C, you generally specify 
+bitmasks using hexadecimal, since C doesn’t have binary literals, and hexadecimal is more concise and readable
+once you get used to it.) In other words, it sets the upper 3 bits of the character to 0. This mirrors what
+the Ctrl key does in the terminal: it strips bits 5 and 6 from whatever key you press in combination with
+Ctrl, and sends that. (By convention, bit numbering starts from 0.) The ASCII character set seems to be designed
+this way on purpose. (It is also similarly designed so that you can set and clear bit 5 to switch between 
+lowercase and uppercase.)
+
+
 
