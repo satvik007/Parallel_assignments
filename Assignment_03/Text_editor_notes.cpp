@@ -210,6 +210,10 @@ The C and B commands are specifically documented to stop the cursor from going p
 The reason we don’t use the <esc>[999;999H command is that the documentation doesn’t specify what happens 
 when you try to move the cursor off-screen.
 
+Next we need to get the cursor position. The n command (Device Status Report) can be used to query the 
+terminal for status information. We want to give it an argument of 6 to ask for the cursor position. Then 
+we can read the reply from the standard input.
+
 
 
 
